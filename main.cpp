@@ -100,6 +100,19 @@ void testWhynter(uint32_t par) {
     finalize();   
 }
 
+// PR #472
+#if SEND_DIRECTV
+void testDirecTV(uint32_t par) {
+    uint32_t F = par & 0xFF;
+    uint32_t D = (par >> 8) & 0xF;
+    uint32_t C = (7*((F >> 6) & 0x3) + 5*((F >> 4) & 0x3) + 3*((F >> 2) & 0x3)+ (F & 0x3)) & 0xF;
+    uint16_t data = static_cast<uint16_t>((D << 12) | (F << 4) | C);
+    std::cout << "DirecTV_0x" << std::hex << D << "_" << F << std::endl;
+    irsend.sendDirecTV(data, 16);
+    finalize();
+}
+#endif
+
 bool work(const char* protName, unsigned reps) {
     for (unsigned int i = 0; i < reps; i++) {
         uint32_t p = static_cast<uint32_t> (rand());
@@ -135,6 +148,10 @@ bool work(const char* protName, unsigned reps) {
             testSony20(p); // OK
         else if (STRINGEQUAL(protName, "whynter"))
             testWhynter(p); // OK?
+#if SEND_DIRECTV
+        else if (STRINGEQUAL(protName, "directv"))
+            testDirecTV(p);
+#endif
         else {
             std::cerr << "Unknown protocol requested: " << protName << std::endl;
             return false;
