@@ -61,7 +61,7 @@ irremote: $(OBJS)
 	$(CXX) -o $@ $(OBJS)
 
 clean:
-	rm -f *.o *.$(IRENDING) $(DECODEENDING) irremote
+	rm -f *.o *.$(IRENDING) *.$(DECODEENDING) irremote
 
 test: $(foreach prot,$(PROTOCOL_NAMES),$(prot).$(IRENDING))
 

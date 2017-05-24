@@ -32,10 +32,14 @@ Unpack/clone the project to another directory. Edit the Makefile so that
 `IRREMOTE_DIR` points to the directory containing IRremote files. Issuing the command `make test`
 should now build a program and invoke it to generate a number of test files, that can be analyzed
 by your favorite IR analyzer.
+By defining DECODE suitably, the generated files can be decoded under the control of the Makefile.
+
+Note that the Makefile is parallelization safe, i.e. by using the `-j` flag to `make`, multiple processes
+are run in parallel, to the extent theoretically possible.
 
 ## Adding new protocols
-Extend `main.cpp` as desired. If necessary, add the cpp file to the Makefile's `PROTOCOLS` variable.
-Modify the `Makefile` as desired/necessary.
+Extend `main.cpp` as desired. Add the cpp file to the Makefile's `PROTOCOL_FILES` variable,
+and the protocol names (in the sense of main.cpp) to PROTOCOL_NAMES.
 
 ## Adding new tests
 Modify `main.cpp`, and/or the `Makefile`. Or another file...
