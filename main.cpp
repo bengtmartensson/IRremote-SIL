@@ -1,6 +1,9 @@
 #include "IRremote.h"
 #include <iostream>
 #include <cstdlib>
+#include <strings.h>
+
+#define STRINGEQUAL(a, b) (strcasecmp(a, b) == 0)
 
 uint8_t PORTB;
 static IRsend irsend;
@@ -97,72 +100,59 @@ void testWhynter(uint32_t par) {
     finalize();   
 }
 
-void work(unsigned n, unsigned reps) {
+bool work(const char* protName, unsigned reps) {
     for (unsigned int i = 0; i < reps; i++) {
         uint32_t p = static_cast<uint32_t> (rand());
-        switch (n) {
-            case 0:
-                testAiwaRCT501(p); // NOK
-                break;
-            case 1:
-                testDenon(p); // OK?
-                break;
-            case 2:
-                testDish(p); // NOK
-                break;
-            case 3:
-                testJVC(p, false); // OK
-                break;
-            case 4:
-                testJVC(p, true); // NOK
-                break;
-            case 5:
-                testLG(p); // = JVC
-                break;
-            case 6:
-                testLego(p, false); // ??
-                break;
-            case 7:
-                testLego(p, true); // ??
-                break;
-            case 8:
-                testNec(p); // OK
-                break;
-            case 9:
-                testPanasonic(p); // NOK
-                break;
-            case 10:
-                testRc5(p); // OK
-                break;
-            case 11:
-                testRc6(p); // OK
-                break;
-            case 12:
-                testSamsung(p); // OK
-                break;
-            case 13:
-                testSharp(p); // ?
-                break;
-            case 14:
-                testSony20(p);  // OK
-                break;
-            case 15:
-                testWhynter(p); // OK?
-                break;
-            default:
-                break;
+        if (STRINGEQUAL(protName, "aiwa"))
+            testAiwaRCT501(p); // NOK
+        else if (STRINGEQUAL(protName, "denon"))
+            testDenon(p); // OK?
+        else if (STRINGEQUAL(protName, "dish"))
+            testDish(p); // NOK
+        else if (STRINGEQUAL(protName, "jvc"))
+            testJVC(p, false); // OK
+        else if (STRINGEQUAL(protName, "jvc-repeat"))
+            testJVC(p, true); // NOK
+        else if (STRINGEQUAL(protName, "lg"))
+            testLG(p); // = JVC
+        else if (STRINGEQUAL(protName, "lego"))
+            testLego(p, false); // ??
+        else if (STRINGEQUAL(protName, "lego-repeat"))
+            testLego(p, true); // ??
+        else if (STRINGEQUAL(protName, "nec"))
+            testNec(p); // OK
+        else if (STRINGEQUAL(protName, "panasonic"))
+            testPanasonic(p); // NOK
+        else if (STRINGEQUAL(protName, "rc5"))
+            testRc5(p); // OK
+        else if (STRINGEQUAL(protName, "rc6"))
+            testRc6(p); // OK
+        else if (STRINGEQUAL(protName, "samsung"))
+            testSamsung(p); // OK
+        else if (STRINGEQUAL(protName, "sharp"))
+            testSharp(p); // ?
+        else if (STRINGEQUAL(protName, "sony20"))
+            testSony20(p); // OK
+        else if (STRINGEQUAL(protName, "whynter"))
+            testWhynter(p); // OK?
+        else {
+            std::cerr << "Unknown protocol requested: " << protName << std::endl;
+            return false;
         }
     }
 }
 
+void usage(const char* progname) {
+    std::cerr << "Usage:" << std::endl
+            << "\t" << progname << " protocol [repeats]" << std::endl;
+    exit(1);
+}
+
 int main(int argc, char** argv) {
-    if (argc <= 1) {
-        for (unsigned int i = 0; i <= 15; i++)
-            work(i, 4);
-    } else {
-        unsigned n = atoi(argv[1]);
-        unsigned reps = argc > 2 ? atoi(argv[2]) : 1;
-        work(n, reps);
-    }
-    return 0;
+    if (argc < 2)
+        usage(argv[0]);
+    unsigned n = atoi(argv[1]);
+    unsigned reps = argc > 2 ? atoi(argv[2]) : 1;
+    bool status = work(argv[1], reps);
+    return status ? 0 : 2;
 }
