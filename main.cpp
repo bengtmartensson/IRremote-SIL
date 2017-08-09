@@ -100,6 +100,12 @@ void testWhynter(uint32_t par) {
     finalize();
 }
 
+void testGREE(uint32_t par1, uint32_t par2) {
+    std::cout << "gree_0x" << std::hex << par1 << par2 << std::endl;
+    irsend.sendGREE(par1, par2);
+    finalize();
+}
+
 bool work(const char* protName, unsigned reps) {
     for (unsigned int i = 0; i < reps; i++) {
         uint32_t p = static_cast<uint32_t> (rand());
@@ -135,6 +141,8 @@ bool work(const char* protName, unsigned reps) {
             testSony20(p); // OK
         else if (STRINGEQUAL(protName, "whynter"))
             testWhynter(p); // OK?
+        else if (STRINGEQUAL(protName, "gree"))
+            testGREE(p, p ^ 0xAAAAAAAAU);
         else {
             std::cerr << "Unknown protocol requested: " << protName << std::endl;
             return false;

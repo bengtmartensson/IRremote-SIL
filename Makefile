@@ -28,7 +28,8 @@ PROTOCOL_FILES := \
 	ir_Samsung.o \
 	ir_Sharp.o \
 	ir_Sony.o \
-	ir_Whynter.o
+	ir_Whynter.o \
+	ir_GREE.o
 
 PROTOCOL_NAMES := \
 	aiwa \
@@ -46,7 +47,8 @@ PROTOCOL_NAMES := \
 	samsung \
 	sharp \
 	sony20 \
-	whynter
+	whynter \
+	gree
 
 OBJS := $(PROTOCOL_FILES) IRsend.o IRremote.o main.o
 
