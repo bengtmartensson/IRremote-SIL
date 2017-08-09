@@ -12,7 +12,7 @@ extern void finalize(); // in our IRsend.cpp
 
 void delay(unsigned int ms) {
     irsend.space(1000*ms);
-} 
+}
 
 void testNec(uint32_t par) {
     std::cout << "NEC_0x" << std::hex << par << std::endl;
@@ -24,80 +24,80 @@ void testAiwaRCT501(uint32_t par) {
     int16_t p = static_cast<int16_t>(par);
     std::cout << "AiwaRCT501_0x" << std::hex << p << std::endl;
     irsend.sendAiwaRCT501(p);
-    finalize();       
+    finalize();
 }
 
 void testDenon(uint32_t par) {
     std::cout << "Denon_0x" << std::hex << par << std::endl;
     irsend.sendDenon(par, 14);
-    finalize();       
+    finalize();
 }
 
 void testDish(uint32_t par) {
     std::cout << "Dish_0x" << std::hex << par << std::endl;
     irsend.sendDenon(par, 16);
-    finalize();       
+    finalize();
 }
 
 void testJVC(uint32_t par, bool repeat) {
     std::cout << (repeat ? "JVCrepeat_0x" : "JVC_0x") << std::hex << par << std::endl;
     irsend.sendJVC(par, 16, repeat);
     finalize();
-       
+
 }
 
 void testLG(uint32_t par) {
     std::cout << "LG_0x" << std::hex << par << std::endl;
     irsend.sendLG(par, 16);
-    finalize();       
+    finalize();
 }
 
 void testLego(uint32_t par, bool repeat) {
     std::cout << "Lego_0x" << std::hex << par << std::endl;
     irsend.sendLegoPowerFunctions(par, repeat);
-    finalize();       
+    finalize();
 }
 
 void testPanasonic(uint32_t par) {
     std::cout << "Panasonic_0x" << std::hex << par << std::endl;
     irsend.sendPanasonic(par << 16, par & 0xFFFF);
-    finalize();       
+    finalize();
 }
 
 void testRc5(uint32_t par) {
-    std::cout << "Rc5_0x" << std::hex << par << std::endl; 
+    std::cout << "Rc5_0x" << std::hex << par << std::endl;
     irsend.sendRC5(par & 0xFFF, 12);
-    finalize();       
+    finalize();
 }
 
 void testRc6(uint32_t par) {
     std::cout << "Rc6_0x" << std::hex << par << std::endl;
     irsend.sendRC6(par, 20);
-    finalize();       
+    finalize();
 }
 
 void testSamsung(uint32_t par) {
     std::cout << "Samsung_0x" << std::hex << par << std::endl;
     irsend.sendSAMSUNG(par, 20);
-    finalize();       
+    finalize();
 }
 
 void testSharp(uint32_t par) {
     std::cout << "Sharp_0x" << std::hex << par << std::endl;
     irsend.sendSharpRaw(par, 15);
-    finalize();       
+    finalize();
 }
 
 void testSony20(uint32_t par) {
     std::cout << "Sony20_0x" << std::hex << par << std::endl;
     irsend.sendSony(par, 20);
-    finalize();       
+    finalize();
 }
 
 void testWhynter(uint32_t par) {
     std::cout << "Whynter_0x" << std::hex << par << std::endl;
     irsend.sendWhynter(par, 32);
-    finalize();   
+    finalize();
 }
 
 bool work(const char* protName, unsigned reps) {

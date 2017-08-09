@@ -3,7 +3,7 @@ IRREMOTE_DIR := $(HOME)/Arduino/libraries/IRremote
 
 # Default number of signals to generate
 REPS := 10
-	
+
 CXX = g++
 
 #DEFINES := -DIR_TIMER_USE_ESP32
@@ -55,7 +55,7 @@ VPATH := $(IRREMOTE_DIR)
 DECODE := irptransmogrifier -f -1 decode --keep-defaulted --all --name
 
 %.o: %.cpp
-	$(CXX) -c -o $@ $(INCLUDE) $(DEFINES) $(WARN) $(OPTIMIZE) $(DEBUG) $< 
+	$(CXX) -c -o $@ $(INCLUDE) $(DEFINES) $(WARN) $(OPTIMIZE) $(DEBUG) $<
 
 irremote: $(OBJS)
 	$(CXX) -o $@ $(OBJS)
@@ -67,8 +67,8 @@ test: $(foreach prot,$(PROTOCOL_NAMES),$(prot).$(IRENDING))
 
 %.$(IRENDING): irremote
 	./$< $*  $(REPS) > $@
-	
+
 decode: $(foreach prot,$(PROTOCOL_NAMES),$(prot).$(DECODEENDING))
-	
+
 %.$(DECODEENDING): %.$(IRENDING)
 	$(DECODE) $< > $@
