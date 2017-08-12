@@ -72,3 +72,19 @@ decode: $(foreach prot,$(PROTOCOL_NAMES),$(prot).$(DECODEENDING))
 
 %.$(DECODEENDING): %.$(IRENDING)
 	$(DECODE) $< > $@
+
+env:
+	env
+	@echo IRREMOTE_DIR=$(IRREMOTE_DIR)
+
+version:
+	make --version
+	$(CXX) --version
+	uname -a
+	-git log | head -1
+	-git -C $(IRREMOTE_DIR) log | head -1
+
+.PHONY: clean env version
+
+# Delete the default legacy suffixes, not used and makes debug output longer.
+.SUFFIXES:
