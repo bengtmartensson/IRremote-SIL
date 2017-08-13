@@ -10,7 +10,7 @@ The rendered signals can be easily analyzed on the host, using tools like e.g. I
 Turn-around times are much faster.
 
 ## Target audience
-This is a tool aimed at programmers, that want to test protocol implementations (`IRsend::send*` and, later `IRrecv::decode*`). 
+This is a tool aimed at programmers, that want to test protocol implementations (`IRsend::send*` and, later `IRrecv::decode*`).
 The reader is (therefore) assumed to master the basics of C++ programming and [`make`](https://www.gnu.org/software/make/manual/).
 
 ## Requirements
@@ -25,11 +25,13 @@ The use of an IDE like [Eclipse](https://eclipse.org/) or [Netbeans](https://net
 is not required, but recommended, in particular for debugging.
 
 ## Usage
-First make sure that `gcc` (`g++`) and `make` are installed. 
+First make sure that `gcc` (`g++`) and `make` are installed.
 Make sure you have the IRremote you want to test unpacked locally on the host.
 (This directory is only read from, and not modified.)
 Unpack/clone the project to another directory. Edit the Makefile so that
-`IRREMOTE_DIR` points to the directory containing IRremote files. Issuing the command `make test`
+`IRREMOTE_DIR` points to the directory containing IRremote files.
+The directory name must not contain spaces.
+Issuing the command `make test`
 should now build a program and invoke it to generate a number of test files, that can be analyzed
 by your favorite IR analyzer.
 By defining DECODE suitably, the generated files can be decoded under the control of the Makefile.
