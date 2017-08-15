@@ -140,6 +140,7 @@ bool work(const char* protName, unsigned reps) {
             return false;
         }
     }
+    return true;
 }
 
 void usage(const char* progname) {
@@ -151,7 +152,6 @@ void usage(const char* progname) {
 int main(int argc, char** argv) {
     if (argc < 2)
         usage(argv[0]);
-    unsigned n = atoi(argv[1]);
     unsigned reps = argc > 2 ? atoi(argv[2]) : 1;
     bool status = work(argv[1], reps);
     return status ? 0 : 2;

@@ -9,8 +9,7 @@ CXX = g++
 #DEFINES := -DIR_TIMER_USE_ESP32
 INCLUDE :=  -I. -I$(IRREMOTE_DIR)
 OPTIMIZE = -O2
-WARN :=
-#WARN := -Wall -Wextra
+WARN := -Wall -Wextra
 DEBUG := -g
 
 IRENDING := seq
