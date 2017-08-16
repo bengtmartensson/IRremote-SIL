@@ -47,6 +47,11 @@ PROTOCOL_NAMES := \
 	sony20 \
 	whynter
 
+# Check that IRREMOTE_DIR is sane, producing a slightly more user friendly error message
+ifeq ($(wildcard $(IRREMOTE_DIR)/*),)
+    $(error IRREMOTE_DIR=$(IRREMOTE_DIR) does not denote a non-empty, readable directory)
+endif
+
 OBJS := $(PROTOCOL_FILES) IRsend.o IRremote.o main.o
 
 VPATH := $(IRREMOTE_DIR)
