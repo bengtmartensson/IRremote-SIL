@@ -1,13 +1,24 @@
 # Define this to be the directory where the IRremote sources reside
 IRREMOTE_DIR := $(HOME)/Arduino/libraries/IRremote
 
+# Check that IRREMOTE_DIR is sane, producing a slightly more user friendly error message
+ifeq ($(wildcard $(IRREMOTE_DIR)/*),)
+    $(error IRREMOTE_DIR=$(IRREMOTE_DIR) does not denote a non-empty, readable directory)
+endif
+
+ifeq ($(wildcard $(IRREMOTE_DIR)/src),)
+    IRREMOTE_SRC=$(IRREMOTE_DIR)
+else
+    IRREMOTE_SRC=$(IRREMOTE_DIR)/src
+endif
+
 # Default number of signals to generate
 REPS := 10
 
 CXX = g++
 
 #DEFINES := -DIR_TIMER_USE_ESP32
-INCLUDE :=  -I. -I$(IRREMOTE_DIR)
+INCLUDE :=  -I. -I$(IRREMOTE_SRC)
 OPTIMIZE = -O2
 WARN := -Wall -Wextra
 DEBUG := -g
@@ -47,14 +58,10 @@ PROTOCOL_NAMES := \
 	sony20 \
 	whynter
 
-# Check that IRREMOTE_DIR is sane, producing a slightly more user friendly error message
-ifeq ($(wildcard $(IRREMOTE_DIR)/*),)
-    $(error IRREMOTE_DIR=$(IRREMOTE_DIR) does not denote a non-empty, readable directory)
-endif
 
 OBJS := $(PROTOCOL_FILES) IRsend.o IRremote.o main.o
 
-VPATH := $(IRREMOTE_DIR)
+VPATH := $(IRREMOTE_SRC)
 
 DECODE := irptransmogrifier -f -1 decode --keep-defaulted --all --name
 
