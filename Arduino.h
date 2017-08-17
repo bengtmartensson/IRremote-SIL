@@ -1,9 +1,7 @@
 // Some stubs for non-Arduino environments.
 
-// For the bizarre file name, see https://github.com/z3t0/Arduino-IRremote/issues/463
-
-#ifndef WPROGRAM_H
-#define WPROGRAM_H
+#ifndef ARDUINO_H
+#define ARDUINO_H
 
 #include <stdint.h>
 #include <iostream>
@@ -13,8 +11,12 @@
 #define B11011111 223
 #define B00100000 32
 
-#define IR_TIMER_USE_ESP32
+// Ideally, boarddefs.h should have a defined(SIL) or !defined(ARDUINO)
+// setting up thing properly. Until then, use a work-around.
+#define ESP32
+#define SEND_PIN 999
 
+// boolean is deprecated
 typedef bool boolean;
 
 extern uint8_t PORTB;
@@ -28,5 +30,5 @@ static inline void digitalWrite(uint8_t pin, uint8_t value) {
 
 extern void delay(unsigned int d);
 
-#endif /* WPROGRAM_H */
+#endif /* ARDUINO_H */
 
