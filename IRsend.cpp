@@ -38,8 +38,6 @@ static void flush() {
 
 void finalize() {
     flush();
-    if (pendingIsMark)
-        std::cout << -DUMMYENDING << std::endl << std::endl;
     std::cout << std::endl << std::endl;
 }
 
@@ -61,12 +59,12 @@ void IRsend::mark(unsigned time) {
 }
 
 void IRsend::space(unsigned time) {
-    //unsigned t = time > 0 ? time : DUMMYENDING;
+    unsigned t = time > 0 ? time : DUMMYENDING;
     if (!pendingIsMark)
-        pending += time;
+        pending += t;
     else {
         flush();
-        pending = time;
+        pending = t;
         pendingIsMark = false;
     }
 }
