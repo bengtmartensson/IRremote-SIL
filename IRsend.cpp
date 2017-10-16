@@ -14,10 +14,10 @@ static void flush() {
 }
 
 void finalize() {
+    flush();
     if (pendingIsMark)
-        flush();
-    
-    std::cout << -DUMMYENDING << std::endl << std::endl;
+        std::cout << -DUMMYENDING << std::endl << std::endl;
+    std::cout << std::endl << std::endl;
 }
 
 void IRsend::enableIROut(int khz) {
