@@ -1,18 +1,8 @@
-#include "IRremote.h"
+#include "IRremote-SIL.h"
 #include <iostream>
-#include <cstdlib>
 #include <strings.h>
 
 #define STRINGEQUAL(a, b) (strcasecmp(a, b) == 0)
-
-uint8_t PORTB;
-static IRsend irsend;
-
-extern void finalize(); // in our IRsend.cpp
-
-void delay(unsigned int ms) {
-    irsend.space(1000*ms);
-}
 
 void testNec(uint32_t par) {
     std::cout << "NEC_0x" << std::hex << par << std::endl;

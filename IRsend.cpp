@@ -7,6 +7,12 @@ static bool pendingIsMark;
 
 unsigned long frequency;
 
+IRsend irsend;
+
+void delay(unsigned int ms) {
+    irsend.space(1000*ms);
+}
+
 static void flush() {
     if (pending > 0)
         std::cout << (pendingIsMark ? "+" : "-") << pending << " ";

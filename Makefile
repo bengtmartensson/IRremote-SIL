@@ -1,5 +1,6 @@
 # Define this to be the directory where the IRremote sources reside
-IRREMOTE_DIR := $(HOME)/Arduino/libraries/IRremote
+#IRREMOTE_DIR := $(HOME)/Arduino/libraries/IRremote
+IRREMOTE_DIR := ../Arduino-IRremote
 
 # Check that IRREMOTE_DIR is sane, producing a slightly more user friendly error message
 ifeq ($(wildcard $(IRREMOTE_DIR)/*),)
