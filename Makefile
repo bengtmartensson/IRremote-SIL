@@ -14,7 +14,7 @@ else
 endif
 
 # Default number of signals to generate
-REPS := 10
+REPS := 100
 
 CXX = g++
 
@@ -25,11 +25,13 @@ WARN := -Wall -Wextra
 DEBUG := -g
 
 IRENDING := seq
-DECODEENDING := decode
+DECODEENDING := dec
+ANALYZEENDING := ana
 
 PROTOCOL_FILES := \
 	ir_Aiwa.o \
 	ir_Denon.o \
+	ir_Dish.o \
 	ir_JVC.o \
 	ir_LG.o \
 	ir_Lego_PF.o \
@@ -54,7 +56,7 @@ PROTOCOL_NAMES := \
 	panasonic \
 	rc5 \
 	rc6 \
-	samsung \
+	samsung20 \
 	sharp \
 	sony20 \
 	whynter
@@ -64,7 +66,7 @@ OBJS := $(PROTOCOL_FILES) IRsend.o IRremote.o main.o
 
 VPATH := $(IRREMOTE_SRC)
 
-DECODE := irptransmogrifier -f -1 decode --keep-defaulted --all --name
+all: decode analyze
 
 %.o: %.cpp
 	$(CXX) -c -o $@ $(INCLUDE) $(DEFINES) $(WARN) $(OPTIMIZE) $(DEBUG) $<
@@ -73,7 +75,7 @@ irremote: $(OBJS)
 	$(CXX) -o $@ $(OBJS)
 
 clean:
-	rm -f *.o *.$(IRENDING) *.$(DECODEENDING) irremote
+	rm -f *.o *.$(IRENDING) *.$(DECODEENDING) *.$(ANALYZEENDING) irremote
 
 test: $(foreach prot,$(PROTOCOL_NAMES),$(prot).$(IRENDING))
 
@@ -83,7 +85,12 @@ test: $(foreach prot,$(PROTOCOL_NAMES),$(prot).$(IRENDING))
 decode: $(foreach prot,$(PROTOCOL_NAMES),$(prot).$(DECODEENDING))
 
 %.$(DECODEENDING): %.$(IRENDING)
-	$(DECODE) $< > $@
+	irptransmogrifier -o $@ decode --radix 16 --keep-defaulted --all --name $<
+
+analyze: $(foreach prot,$(PROTOCOL_NAMES),$(prot).$(ANALYZEENDING))
+
+%.$(ANALYZEENDING): %.$(IRENDING)
+	irptransmogrifier -o $@ analyze --radix 16 --bit-usage --name $<
 
 env:
 	env

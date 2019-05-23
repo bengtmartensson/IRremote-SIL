@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2017 Bengt Martensson.
+Copyright (C) 2017,2019 Bengt Martensson.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,12 +21,6 @@ this program. If not, see http://www.gnu.org/licenses/.
 
 #define STRINGEQUAL(a, b) (strcasecmp(a, b) == 0)
 
-void testNec(uint32_t par) {
-    std::cout << "NEC_0x" << std::hex << par << std::endl;
-    irsend.sendNEC(par, 32);
-    finalize();
-}
-
 void testAiwaRCT501(uint32_t par) {
     int16_t p = static_cast<int16_t>(par);
     std::cout << "AiwaRCT501_0x" << std::hex << p << std::endl;
@@ -42,7 +36,9 @@ void testDenon(uint32_t par) {
 
 void testDish(uint32_t par) {
     std::cout << "Dish_0x" << std::hex << par << std::endl;
-    irsend.sendDenon(par, 16);
+    irsend.sendDISH(par, 16);
+    // sendDISH does not end with space...
+    irsend.space(50000);
     finalize();
 }
 
@@ -50,18 +46,25 @@ void testJVC(uint32_t par, bool repeat) {
     std::cout << (repeat ? "JVCrepeat_0x" : "JVC_0x") << std::hex << par << std::endl;
     irsend.sendJVC(par, 16, repeat);
     finalize();
-
 }
 
 void testLG(uint32_t par) {
     std::cout << "LG_0x" << std::hex << par << std::endl;
-    irsend.sendLG(par, 16);
+    irsend.sendLG(par, 28); // 28 from ir_LG.cpp
     finalize();
 }
 
 void testLego(uint32_t par, bool repeat) {
     std::cout << "Lego_0x" << std::hex << par << std::endl;
     irsend.sendLegoPowerFunctions(par, repeat);
+    finalize();
+}
+
+// Mitsubishi cannot send
+
+void testNec(uint32_t par) {
+    std::cout << "NEC_0x" << std::hex << par << std::endl;
+    irsend.sendNEC(par, 32);
     finalize();
 }
 
@@ -83,15 +86,20 @@ void testRc6(uint32_t par) {
     finalize();
 }
 
-void testSamsung(uint32_t par) {
-    std::cout << "Samsung_0x" << std::hex << par << std::endl;
+void testSamsung20(uint32_t par) {
+    std::cout << "Samsung20_0x" << std::hex << par << std::endl;
     irsend.sendSAMSUNG(par, 20);
     finalize();
 }
 
+// Sanyo cannot send.
+
 void testSharp(uint32_t par) {
     std::cout << "Sharp_0x" << std::hex << par << std::endl;
-    irsend.sendSharpRaw(par, 15);
+    uint16_t F = par & 0xFF;
+    uint16_t D = (par >> 8) & 0x1F;
+    //std::cerr << std::hex << D << "\t" << F << std::endl;
+    irsend.sendSharp(D, F);
     finalize();
 }
 
@@ -109,17 +117,17 @@ void testWhynter(uint32_t par) {
 
 bool work(const char* protName, unsigned reps) {
     for (unsigned int i = 0; i < reps; i++) {
-        uint32_t p = static_cast<uint32_t> (rand());
+        uint64_t p = (static_cast<uint32_t> (rand())) << 31U | (static_cast<uint32_t> (rand())); // 62 bits
         if (STRINGEQUAL(protName, "aiwa"))
-            testAiwaRCT501(p); // NOK
+            testAiwaRCT501(p);
         else if (STRINGEQUAL(protName, "denon"))
-            testDenon(p); // OK?
+            testDenon(p);
         else if (STRINGEQUAL(protName, "dish"))
-            testDish(p); // NOK
+            testDish(p);
         else if (STRINGEQUAL(protName, "jvc"))
-            testJVC(p, false); // OK
+            testJVC(p, false);
         else if (STRINGEQUAL(protName, "jvc-repeat"))
-            testJVC(p, true); // NOK
+            testJVC(p, true);
         else if (STRINGEQUAL(protName, "lg"))
             testLG(p); // = JVC
         else if (STRINGEQUAL(protName, "lego"))
@@ -127,21 +135,21 @@ bool work(const char* protName, unsigned reps) {
         else if (STRINGEQUAL(protName, "lego-repeat"))
             testLego(p, true); // ??
         else if (STRINGEQUAL(protName, "nec"))
-            testNec(p); // OK
+            testNec(p);
         else if (STRINGEQUAL(protName, "panasonic"))
-            testPanasonic(p); // NOK
+            testPanasonic(p);
         else if (STRINGEQUAL(protName, "rc5"))
-            testRc5(p); // OK
+            testRc5(p);
         else if (STRINGEQUAL(protName, "rc6"))
-            testRc6(p); // OK
-        else if (STRINGEQUAL(protName, "samsung"))
-            testSamsung(p); // OK
+            testRc6(p);
+        else if (STRINGEQUAL(protName, "samsung20"))
+            testSamsung20(p);
         else if (STRINGEQUAL(protName, "sharp"))
             testSharp(p); // ?
         else if (STRINGEQUAL(protName, "sony20"))
-            testSony20(p); // OK
+            testSony20(p);
         else if (STRINGEQUAL(protName, "whynter"))
-            testWhynter(p); // OK?
+            testWhynter(p);
         else {
             std::cerr << "Unknown protocol requested: " << protName << std::endl;
             return false;

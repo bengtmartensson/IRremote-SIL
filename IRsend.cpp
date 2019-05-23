@@ -18,7 +18,7 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include "IRremote.h"
 #include <iostream>
 
-static const int DUMMYENDING = 25000;
+static const int DUMMYENDING = 50000;
 static unsigned int pending;
 static bool pendingIsMark;
 
@@ -37,6 +37,8 @@ static void flush() {
 }
 
 void finalize() {
+    if (!pendingIsMark)
+        pending = DUMMYENDING;
     flush();
     std::cout << std::endl << std::endl;
 }
