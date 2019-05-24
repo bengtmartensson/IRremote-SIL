@@ -1,4 +1,6 @@
-# Define this to be the directory where the IRremote sources reside
+# This Makefile runs beautifully in parallel ("make -j").
+
+# Define this to be the directory where IRremote resides
 #IRREMOTE_DIR := $(HOME)/Arduino/libraries/IRremote
 IRREMOTE_DIR := ../Arduino-IRremote
 
@@ -7,16 +9,21 @@ ifeq ($(wildcard $(IRREMOTE_DIR)/*),)
     $(error IRREMOTE_DIR=$(IRREMOTE_DIR) does not denote a non-empty, readable directory)
 endif
 
+# Find the IRremote sources (allowing for the source reorganization).
 ifeq ($(wildcard $(IRREMOTE_DIR)/src),)
-    IRREMOTE_SRC=$(IRREMOTE_DIR)
+    IRREMOTE_SRC := $(IRREMOTE_DIR)
 else
-    IRREMOTE_SRC=$(IRREMOTE_DIR)/src
+    IRREMOTE_SRC := $(IRREMOTE_DIR)/src
 endif
+
+# ... and tell Make to use them
+VPATH := $(IRREMOTE_SRC)
 
 # Default number of signals to generate
 REPS := 100
 
-CXX = g++
+CXX := g++
+ZIP := zip
 
 #DEFINES := -DIR_TIMER_USE_ESP32
 INCLUDE :=  -I. -I$(IRREMOTE_SRC)
@@ -27,6 +34,9 @@ DEBUG := -g
 IRENDING := seq
 DECODEENDING := dec
 ANALYZEENDING := ana
+
+OUTPUTDIR := testoutput
+RESULTFILE := result.zip
 
 PROTOCOL_FILES := \
 	ir_Aiwa.o \
@@ -64,32 +74,34 @@ PROTOCOL_NAMES := \
 
 OBJS := $(PROTOCOL_FILES) IRsend.o IRremote.o main.o
 
-VPATH := $(IRREMOTE_SRC)
-
-all: decode analyze
+all: $(RESULTFILE)
 
 %.o: %.cpp
 	$(CXX) -c -o $@ $(INCLUDE) $(DEFINES) $(WARN) $(OPTIMIZE) $(DEBUG) $<
 
+$(OUTPUTDIR):
+	mkdir $@
+
 irremote: $(OBJS)
 	$(CXX) -o $@ $(OBJS)
 
-clean:
-	rm -f *.o *.$(IRENDING) *.$(DECODEENDING) *.$(ANALYZEENDING) irremote
+$(RESULTFILE): analyze decode
+	$(MAKE) version > $(OUTPUTDIR)/VERSION
+	$(ZIP) $@ $(OUTPUTDIR)/*
 
-test: $(foreach prot,$(PROTOCOL_NAMES),$(prot).$(IRENDING))
+test: $(foreach prot,$(PROTOCOL_NAMES),$(OUTPUTDIR)/$(prot).$(IRENDING))
 
-%.$(IRENDING): irremote
-	./$< $*  $(REPS) > $@
+%.$(IRENDING): irremote | $(OUTPUTDIR)
+	./$< $(*F)  $(REPS) > $@
 
-decode: $(foreach prot,$(PROTOCOL_NAMES),$(prot).$(DECODEENDING))
+decode: $(foreach prot,$(PROTOCOL_NAMES),$(OUTPUTDIR)/$(prot).$(DECODEENDING))
 
-%.$(DECODEENDING): %.$(IRENDING)
-	irptransmogrifier -o $@ decode --radix 16 --keep-defaulted --all --name $<
+%.$(DECODEENDING): %.$(IRENDING) | $(OUTPUTDIR)
+	irptransmogrifier -f -1 -o $@ decode --radix 16 --keep-defaulted --all --name $<
 
-analyze: $(foreach prot,$(PROTOCOL_NAMES),$(prot).$(ANALYZEENDING))
+analyze: $(foreach prot,$(PROTOCOL_NAMES),$(OUTPUTDIR)/$(prot).$(ANALYZEENDING))
 
-%.$(ANALYZEENDING): %.$(IRENDING)
+%.$(ANALYZEENDING): %.$(IRENDING) | $(OUTPUTDIR)
 	irptransmogrifier -o $@ analyze --radix 16 --bit-usage --name $<
 
 env:
@@ -103,7 +115,13 @@ version:
 	-git log | head -1
 	-git -C $(IRREMOTE_DIR) log | head -1
 
-.PHONY: clean env version
+clean:
+	rm -rf *.o *.$(IRENDING) *.$(DECODEENDING) *.$(ANALYZEENDING) irremote $(OUTPUTDIR) $(RESULTFILE)
+
+.PHONY: clean env version decode analyze all
 
 # Delete the default legacy suffixes, not used and makes debug output longer.
 .SUFFIXES:
+
+# Do not automatically delete $(OUTPUTDIR)/$(prot).$(IRENDING) files
+.SECONDARY: $(foreach prot,$(PROTOCOL_NAMES),$(OUTPUTDIR)/$(prot).$(IRENDING))

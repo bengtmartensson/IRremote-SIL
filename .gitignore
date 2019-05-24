@@ -36,3 +36,7 @@ nbproject
 irremote
 *.decode
 *~
+*.ana
+*.dec
+testoutput
+result.zip
